@@ -1,0 +1,8 @@
+Flask
+firebase-admin
+flask-cors
+requests
+apscheduler
+python-dotenv
+werkzeug
+flask-socketio

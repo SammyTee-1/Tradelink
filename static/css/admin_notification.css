@@ -1,0 +1,62 @@
+body {
+  background: #f5f7fa;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.admin-container {
+  max-width: 420px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  padding: 2.5rem 2rem 2rem 2rem;
+}
+.admin-container h2 {
+  margin-top: 0;
+  color: #00456d;
+  text-align: center;
+}
+.form-group {
+  margin-bottom: 1.3rem;
+}
+label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #222;
+}
+input[type="text"], textarea {
+  width: 100%;
+  padding: 0.7rem;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  font-size: 1rem;
+  background: #f9f9f9;
+  transition: border 0.2s;
+}
+input[type="text"]:focus, textarea:focus {
+  border: 1.5px solid #007ab7;
+  outline: none;
+}
+button[type="submit"] {
+  background: #00456d;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 0.8rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+}
+button[type="submit"]:hover {
+  background: #007ab7;
+}
+#adminNotifStatus {
+  margin-top: 1.2rem;
+  text-align: center;
+  font-size: 1rem;
+  min-height: 1.2em;
+}

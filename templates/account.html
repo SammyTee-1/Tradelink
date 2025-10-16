@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Account - Tradelink</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Tradelink">
+  <meta name="msapplication-TileColor" content="#025b00">
+  <meta name="msapplication-TileImage" content="{{ url_for('static', filename='icons/icon-192.png') }}">
+  <meta property="og:title" content="Tradelink-Account Settings">
+  <meta property="og:description" content="Manage your personal details and account settings.">
+  <meta property="og:image" content="{{ url_for('static', filename='icons/icon-512.png') }}">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Tradelink-Account Settings">
+  <meta name="twitter:description" content="Manage your personal details and account settings.">
+  <meta name="twitter:image" content="{{ url_for('static', filename='icons/icon-512.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/component.css') }}" />
+
+</head>
+
+<body>
+
+ <aside class="sidebar">
+    <div class="sidebar-logo">Tradelink</div>
+    <nav class="sidebar-nav">
+      <button class="sidebar-btn active"><span>&#8962;</span> Home</button>
+      <button class="sidebar-btn"><span>&#128200;</span> Markets</button>
+      <button class="sidebar-btn"><span>&#128196;</span> Trade</button>
+      <button class="sidebar-btn"><span>&#128176;</span> Earn</button>
+      <button class="sidebar-btn"><span>&#128188;</span> Assets</button>
+    </nav>
+    <div style="padding: 1rem;">
+      <button id="themeToggleSidebar" class="sidebar-btn"
+        style="width:100%;display:flex;align-items:center;gap:0.7rem;">
+        <span id="themeToggleIconSidebar">&#9788;</span>
+        <span id="themeToggleLabelSidebar">Light Mode</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="tl-main-content">
+    <header>
+      <button class="tl-back-btn" onclick="window.location.href='/'" title="Back to Home" aria-label="Back">
+        <!-- Back arrow icon -->
+        <span style="display:inline-block;font-size:1.7em; line-height:1;vertical-align:middle;">&#8592;</span>
+      </button>
+    </header>
+    <main>
+      <section class="tl-account-section">
+        <h2 class="tl-account-title">Account Settings</h2>
+        <div class="tl-avatar-section">
+          <div class="tl-avatar-container" style="display:flex;align-items:center;justify-content:center;">
+            <!-- Profile SVG icon instead of image -->
+            <svg id="profileAvatar" class="tl-avatar-img" width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" style="background:#f0f4f8;border-radius:50%;border:3px solid var(--primary,#007aff);box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+              <circle cx="48" cy="48" r="46" stroke="#007aff" stroke-width="4" fill="#f0f4f8"/>
+              <circle cx="48" cy="40" r="18" fill="#c7e0fa"/>
+              <ellipse cx="48" cy="72" rx="28" ry="16" fill="#c7e0fa"/>
+              <circle cx="48" cy="40" r="14" fill="#fff"/>
+              <ellipse cx="48" cy="72" rx="22" ry="12" fill="#fff"/>
+              <circle cx="48" cy="40" r="10" fill="#b3d1f7"/>
+            </svg>
+          </div>
+          <div class="tl-uid-field">
+            <span class="tl-uid-label">UID:</span>
+            <span class="tl-uid-value" id="uidValue">{{ uid }}</span>
+            <button class="tl-copy-uid-btn" title="Copy UID" aria-label="Copy UID" style="background:none;border:none;cursor:pointer;padding:0 0.5rem;">
+              <!-- Common copy icon (two sheets) -->
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <rect x="2" y="2" width="13" height="13" rx="2" ry="2"></rect>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <form id="account-form" class="tl-account-form">
+          <div class="tl-form-group">
+            <label for="account-name">Full Name</label>
+            <input type="text" id="account-name" name="name" value="{{ name }}" required>
+          </div>
+          <div class="tl-form-group">
+            <label for="account-email">Email Address</label>
+            <input type="email" id="account-email" name="email" value="{{ email }}" required>
+          </div>
+          <div class="tl-form-group">
+            <label for="account-phone">Phone Number</label>
+            <input type="tel" id="account-phone" name="phone" value="{{ phone }}" required>
+          </div>
+          <div class="tl-form-actions">
+            <button type="button" class="tl-edit-btn">Edit</button>
+            <button type="submit" class="tl-save-btn" style="display:none;">Save</button>
+            <button type="button" class="tl-cancel-btn" style="display:none;">Cancel</button>
+          </div>
+        </form>
+       
+      </section>
+    </main>
+  </div>
+
+  <div id="spinner" class="spinner hidden"></div>
+<div id="toast" class="toast"></div>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/account.js') }}"></script>
+</body>
+</html>

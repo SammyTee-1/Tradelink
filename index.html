@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CryptoCompare Realtime Price List (2s)</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --muted:#94a3b8;
+      --green:#10b981;
+      --red:#ef4444;
+      --glass: rgba(255,255,255,0.02);
+      --accent:#06b6d4;
+    }
+    *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+    body{
+      margin:0;
+      min-height:100vh;
+      background:linear-gradient(180deg,#081226 0%, #071022 100%);
+      color:#e6eef8;
+      padding:28px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      gap:20px;
+    }
+
+    .container{width:960px;max-width:95%;}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;}
+    header h1{margin:0;font-size:20px;letter-spacing:0.2px;}
+    header p{margin:0;color:var(--muted);font-size:13px;}
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px;
+      padding:12px;
+      box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+    .list-head{display:grid;grid-template-columns: 1fr 140px 140px 120px;gap:10px;padding:10px 8px;border-bottom:1px solid rgba(255,255,255,0.03);color:var(--muted);font-size:13px;}
+    .rows{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+    .row{display:grid;grid-template-columns: 1fr 140px 140px 120px;gap:10px;align-items:center;padding:10px 8px;border-radius:8px;transition:background .25s, transform .15s;background:transparent;}
+    .row .coin{display:flex;gap:12px;align-items:center;}
+    .logo{width:40px;height:40px;border-radius:8px;background:var(--glass);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);font-size:14px;}
+    .coin .meta{display:flex;flex-direction:column;}
+    .coin .meta .symbol{font-weight:700;}
+    .coin .meta .name{font-size:12px;color:var(--muted);}
+    .price{font-weight:700;font-size:15px;}
+    .change{font-weight:700;text-align:right;}
+    .vol{text-align:right;color:var(--muted);font-size:13px;}
+    .up{color:var(--green);}
+    .down{color:var(--red);}
+    .flash-up{ animation: flashUp .9s ease; }
+    .flash-down{ animation: flashDown .9s ease; }
+    @keyframes flashUp{0%{ background: rgba(16,185,129,0.06); transform: translateY(-2px);}100%{ background: transparent; transform: translateY(0);} }
+    @keyframes flashDown{0%{ background: rgba(239,68,68,0.06); transform: translateY(-2px);}100%{ background: transparent; transform: translateY(0);} }
+    .footer{margin-top:12px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px;}
+    .error{color:#fda4af;margin-top:10px;font-size:13px;}
+    @media (max-width:760px){.list-head, .row { grid-template-columns: 1fr 100px 100px; }.row .vol { display:none; }}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Realtime Crypto Prices — updates every 2s</h1>
+        <p>Source: CryptoCompare · endpoint: <code>pricemultifull</code></p>
+      </div>
+      <div><small id="lastUpdated">—</small></div>
+    </header>
+
+    <div class="card">
+      <div class="list-head">
+        <div>Asset</div>
+        <div>Price (USD)</div>
+        <div>24h Change</div>
+        <div>24h Volume</div>
+      </div>
+      <div id="rows" class="rows"></div>
+      <div class="footer">
+        <div>Symbols: <span id="symbolList"></span></div>
+        <div id="status" style="color:var(--muted)">Initializing…</div>
+      </div>
+      <div id="error" class="error" style="display:none"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_KEY = "YOUR_API_KEY_HERE"; // replace with your CryptoCompare API key
+    const SYMBOLS = ["BTC","ETH","SOL","DOGE","LTC","XRP"];
+    const CURRENCY = "USD";
+    const REFRESH_MS = 500; // now 2 seconds
+
+    document.getElementById('symbolList').textContent = SYMBOLS.join(', ');
+    const rowsEl = document.getElementById('rows');
+    const statusEl = document.getElementById('status');
+    const errorEl = document.getElementById('error');
+    const lastUpdatedEl = document.getElementById('lastUpdated');
+    const state = {};
+
+    function createRowNode(sym){const row=document.createElement('div');row.className='row';row.dataset.sym=sym;row.innerHTML=`<div class="coin"><div class="logo">${sym[0]}</div><div class="meta"><div class="symbol">${sym}</div><div class="name"></div></div></div><div class="price" data-price>—</div><div class="change" data-change>—</div><div class="vol" data-vol>—</div>`;return row;}
+    function initRows(){rowsEl.innerHTML='';for(const s of SYMBOLS){rowsEl.appendChild(createRowNode(s));}}
+    function fmtNumber(n){if(!n)return'—';if(Math.abs(n)>=1e9)return(n/1e9).toFixed(2)+'B';if(Math.abs(n)>=1e6)return(n/1e6).toFixed(2)+'M';if(Math.abs(n)>=1e3)return(n/1e3).toFixed(2)+'K';return Number(n).toFixed(2);}
+
+    async function fetchPrices(){
+      errorEl.style.display='none';statusEl.textContent='Fetching…';
+      const url=`https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${SYMBOLS.join(',')}&tsyms=${CURRENCY}&api_key=${API_KEY}`;
+      try{
+        const r=await fetch(url);
+        if(!r.ok) throw new Error(`HTTP ${r.status}`);
+        const data=await r.json();
+        if(data.Response==="Error") throw new Error(data.Message);
+        updateRows(data);
+        statusEl.textContent='Updated';lastUpdatedEl.textContent=new Date().toLocaleTimeString();
+      }catch(err){statusEl.textContent='Error';errorEl.style.display='block';errorEl.textContent='Fetch error: '+err.message;}
+    }
+
+    function updateRows(data){
+      const display=data.DISPLAY||{}, raw=data.RAW||{};
+      for(const sym of SYMBOLS){
+        const row=rowsEl.querySelector(`.row[data-sym="${sym}"]`);
+        const d=(display[sym]&&display[sym][CURRENCY])||null;
+        const r=(raw[sym]&&raw[sym][CURRENCY])||null;
+        const priceEl=row.querySelector('[data-price]');
+        const changeEl=row.querySelector('[data-change]');
+        const volEl=row.querySelector('[data-vol]');
+
+        const priceText=d&&d.PRICE?d.PRICE:(r&&r.PRICE?r.PRICE.toFixed(2):'—');
+        const changeNum=r&&typeof r.CHANGEPCT24HOUR==='number'?r.CHANGEPCT24HOUR:null;
+        const changeText=changeNum!==null?changeNum.toFixed(2)+'%':'—';
+        const vol24=r&&r.VOLUME24HOUR?r.VOLUME24HOUR:null;
+
+        const prev=state[sym]?state[sym].price:null;
+        const curr=r&&r.PRICE?r.PRICE:null;
+
+        priceEl.textContent=priceText;
+        changeEl.textContent=changeText;
+        volEl.textContent=vol24?fmtNumber(vol24):'—';
+
+        if(changeNum!==null){
+          changeEl.classList.toggle('up',changeNum>=0);
+          changeEl.classList.toggle('down',changeNum<0);
+        }
+        if(prev!==null&&curr!==null&&prev!==curr){
+          row.classList.remove('flash-up','flash-down');void row.offsetWidth;
+          row.classList.add(curr>prev?'flash-up':'flash-down');
+        }
+        state[sym]={price:curr};
+      }
+    }
+
+    initRows();
+    fetchPrices();
+    const timer=setInterval(fetchPrices,REFRESH_MS);
+  </script>
+</body>
+</html>

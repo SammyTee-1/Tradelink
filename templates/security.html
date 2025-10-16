@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Security - Tradelink</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Tradelink">
+  <meta name="msapplication-TileColor" content="#025b00">
+  <meta name="msapplication-TileImage" content="{{ url_for('static', filename='icons/icon-192.png') }}">
+  <meta property="og:title" content="Tradelink-Security Settings">
+  <meta property="og:description" content="Manage your account security settings.">
+  <meta property="og:image" content="{{ url_for('static', filename='icons/icon-512.png') }}">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Tradelink-Security Settings">
+  <meta name="twitter:description" content="Manage your account security settings.">
+  <meta name="twitter:image" content="{{ url_for('static', filename='icons/icon-512.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/security.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/component.css') }}" />
+  
+
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-logo">Tradelink</div>
+    <nav class="sidebar-nav">
+      <button class="sidebar-btn" onclick="window.location.href='/'"><i class="fas fa-home"></i> Home</button>
+      <button class="sidebar-btn" onclick="window.location.href='/markets'"><i class="fas fa-chart-line"></i> Markets</button>
+      <button class="sidebar-btn" onclick="window.location.href='/trade'"><i class="fas fa-exchange-alt"></i> Trade</button>
+      <button class="sidebar-btn" onclick="window.location.href='/earn'"><i class="fas fa-coins"></i> Earn</button>
+      <button class="sidebar-btn" onclick="window.location.href='/assets'"><i class="fas fa-wallet"></i> Assets</button>
+      <button class="sidebar-btn active" onclick="window.location.href='/security'"><i class="fas fa-lock"></i> Security</button>
+    </nav>
+    <div style="padding: 1rem;">
+      <button id="themeToggleSidebar" class="sidebar-btn" style="width:100%;display:flex;align-items:center;gap:0.7rem;" onclick="window.toggleTheme()">
+        <span id="themeToggleIconSidebar">&#9788;</span>
+        <span id="themeToggleLabelSidebar">Light Mode</span>
+      </button>
+    </div>
+  </aside>
+  <div class="main-content">
+    <div id="sec-main-list">
+      <div class="security-fullpage-header">
+  <button onclick="window.location.href='/'" title="Back to Home" aria-label="Back" class="security-back-button">
+          <i class="fa fa-arrow-left"></i>
+        </button>
+        <h2 class="security-fullpage-title">Security Settings</h2>
+      </div>
+      <ul class="security-list">
+        <li class="security-list-item" onclick="showSecurityPage('change-password')">
+          <span class="security-list-label"><i class="fa fa-key security-list-icon security-list-icon-yellow"></i>Change Password</span>
+          <i class="fa fa-chevron-right security-list-chevron"></i>
+        </li>                          
+        <li class="security-list-item" onclick="showSecurityPage('2fa')">
+          <span class="security-list-label"><i class="fa fa-shield-halved security-list-icon security-list-icon-blue"></i>2FA Authentication</span>
+          <i class="fa fa-chevron-right security-list-chevron"></i>
+        </li>
+        <li class="security-list-item" onclick="showSecurityPage('withdrawal-pin')">
+          <span class="security-list-label"><i class="fa fa-lock security-list-icon security-list-icon-green"></i>Withdrawal PIN</span>
+          <i class="fa fa-chevron-right security-list-chevron"></i>
+        </li>
+        <li class="security-list-item" onclick="showSecurityPage('delete-account')">
+          <span class="security-list-label security-list-label-red"><i class="fa fa-trash security-list-icon security-list-icon-red"></i>Delete Account</span>
+          <i class="fa fa-chevron-right security-list-chevron"></i>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Change Password Full Page -->
+    <div id="sec-change-password" class="security-fullpage" style="display:none;">
+      <div class="security-fullpage-header">
+        <button onclick="showMainList()" title="Back" aria-label="Back" class="security-back-btn">
+          <i class="fa fa-arrow-left"></i>
+        </button>
+        <h2 class="security-fullpage-title">Change Password</h2>
+      </div>
+      <form id="change-password-form" class="security-form">
+        <input type="password" id="current-password" name="current_password" placeholder="Current Password" required class="security-input">
+        <input type="password" id="new-password" name="new_password" placeholder="New Password" required class="security-input">
+        <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirm New Password" required class="security-input">
+        <button type="submit" class="security-btn security-btn-blue">Change Password</button>
+      </form>
+    </div>
+
+    <!-- 2FA Full Page (with backend) -->
+    <div id="sec-2fa" class="security-fullpage" style="display:none;">
+      <div class="security-fullpage-header">
+        <button onclick="showMainList()" title="Back" aria-label="Back" class="security-back-btn">
+          <i class="fa fa-arrow-left"></i>
+        </button>
+        <h2 class="security-fullpage-title">2FA Authentication</h2>
+      </div>
+      <div id="twofa-status-container" style="margin-bottom:1.2rem;">
+        <span id="twofa-status-label" class="security-pin-status" style="font-weight:600;font-size:1.1em;"></span>
+      </div>
+      <div id="twofa-enable-section" style="display:none;">
+        <p>Protect your account with 2FA. Scan the QR code below with Google Authenticator or a compatible app, or enter the secret key manually.</p>
+        <div style="text-align:center;margin:1.2em 0;">
+          <img id="twofa-qr" src="" alt="2FA QR Code" style="max-width:180px;display:none;margin-bottom:0.7em;" />
+          <div id="twofa-secret-container" style="margin-bottom:0.7em;display:none;">
+            <span style="font-weight:600;">Secret:</span> <span id="twofa-secret" style="font-family:monospace;font-size:1.1em;"></span>
+          </div>
+        </div>
+        <form id="twofa-enable-form" class="security-form">
+          <div id="twofa-code-group" style="display:flex;gap:0.5em;justify-content:center;">
+            <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="security-input twofa-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required>
+            <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="security-input twofa-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required>
+            <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="security-input twofa-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required>
+            <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="security-input twofa-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required>
+            <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="security-input twofa-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required>
+            <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="security-input twofa-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required>
+          </div>
+          <input type="hidden" id="twofa-code" name="code">
+          <input type="hidden" id="twofa-secret-input" name="secret">
+          <button type="submit" class="security-btn security-btn-blue">Enable 2FA</button>
+        </form>
+      </div>
+      <div id="twofa-disable-section" style="display:none;">
+        <p style="color:#0ecb81;font-weight:600;">2FA is currently <span style="color:#0ecb81;">ENABLED</span> on your account.</p>
+        <button id="twofa-disable-btn" class="security-btn security-btn-red" type="button" style="width:100%;margin-bottom:1rem;">Disable 2FA</button>
+        <form id="twofa-disable-form" class="security-form" style="display:none;">
+          <div id="twofa-disable-code-group" style="display:flex;gap:0.5em;justify-content:center;">
+            <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="security-input twofa-disable-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required>
+            <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="security-input twofa-disable-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required>
+            <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="security-input twofa-disable-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required>
+            <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="security-input twofa-disable-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required>
+            <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="security-input twofa-disable-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required>
+            <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="security-input twofa-disable-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required>
+          </div>
+          <input type="hidden" id="twofa-disable-code" name="code">
+          <button type="submit" class="security-btn security-btn-red">Confirm Disable</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Withdrawal PIN Full Page -->
+    <div id="sec-withdrawal-pin" class="security-fullpage" style="display:none;">
+      <div class="security-fullpage-header">
+        <button onclick="showMainList()" title="Back" aria-label="Back" class="security-back-btn">
+          <i class="fa fa-arrow-left"></i>
+        </button>
+        <h2 class="security-fullpage-title">Withdrawal PIN</h2>
+      </div>
+      <div id="pin-status-container" style="margin-bottom:1.2rem;">
+        <span id="pin-status-label" class="security-pin-status" style="font-weight:600;font-size:1.1em;"></span>
+      </div>
+      <form id="set-pin-form" class="security-form" autocomplete="off">
+        <div id="pin-code-group" style="display:flex;gap:0.5em;justify-content:center;">
+          <input type="password" maxlength="1" inputmode="numeric" pattern="\d" class="security-input pin-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="off" autocorrect="off" spellcheck="false" placeholder="-">
+          <input type="password" maxlength="1" inputmode="numeric" pattern="\d" class="security-input pin-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="off" autocorrect="off" spellcheck="false" placeholder="-">
+          <input type="password" maxlength="1" inputmode="numeric" pattern="\d" class="security-input pin-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="off" autocorrect="off" spellcheck="false" placeholder="-">
+          <input type="password" maxlength="1" inputmode="numeric" pattern="\d" class="security-input pin-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="off" autocorrect="off" spellcheck="false" placeholder="-">
+        </div>
+        <input type="hidden" id="withdrawal-pin" name="pin">
+        <div id="confirm-pin-code-group" style="display:flex;gap:0.5em;justify-content:center;margin-top:1em;">
+          <input type="password" maxlength="1" inputmode="numeric" pattern="\d" class="security-input confirm-pin-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="off" autocorrect="off" spellcheck="false" placeholder="-">
+          <input type="password" maxlength="1" inputmode="numeric" pattern="\d" class="security-input confirm-pin-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="off" autocorrect="off" spellcheck="false" placeholder="-">
+          <input type="password" maxlength="1" inputmode="numeric" pattern="\d" class="security-input confirm-pin-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="off" autocorrect="off" spellcheck="false" placeholder="-">
+          <input type="password" maxlength="1" inputmode="numeric" pattern="\d" class="security-input confirm-pin-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="off" autocorrect="off" spellcheck="false" placeholder="-">
+        </div>
+        <input type="hidden" id="confirm-withdrawal-pin" name="confirm_pin">
+        <button type="submit" class="security-btn security-btn-green">
+          {% if withdrawal_pin_set %}Change PIN{% else %}Set PIN{% endif %}
+        </button>
+      </form>
+      <!-- Turn Off PIN button will be injected here by JS -->
+    </div>
+
+    <!-- Delete Account Full Page -->
+    <div id="sec-delete-account" class="security-fullpage" style="display:none;">
+      <div class="security-fullpage-header">
+        <button onclick="showMainList()" title="Back" aria-label="Back" class="security-back-btn">
+          <i class="fa fa-arrow-left"></i>
+        </button>
+        <h2 class="security-fullpage-title security-title-red">Delete Account</h2>
+      </div>
+      <p class="security-delete-warning">Permanently delete your account. This action cannot be undone.</p>
+      <form id="delete-account-form" class="security-form">
+        <input type="password" id="delete-password" name="password" placeholder="Password" required class="security-input">
+        <button type="submit" class="security-btn security-btn-red">Delete Account</button>
+      </form>
+    </div>
+
+    <div id="spinner" class="spinner hidden"></div>
+    <div id="toast" class="toast"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+  <script src="{{ url_for('static', filename='js/security.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  <script>
+    // PIN column input logic (like OTP)
+    document.addEventListener('DOMContentLoaded', function() {
+      function digitOnly(e) {
+        if (e.inputType && e.inputType.startsWith('delete')) return;
+        const v = e.target.value;
+        e.target.value = v.replace(/[^0-9]/g, '');
+      }
+      // PIN entry columns
+      const pinInputs = document.querySelectorAll('.pin-code-input');
+      const confirmPinInputs = document.querySelectorAll('.confirm-pin-code-input');
+      function handleInput(e, group) {
+        digitOnly(e);
+        const inputs = group === 'pin' ? pinInputs : confirmPinInputs;
+        if (e.target.value.length === 1) {
+          const idx = Array.from(inputs).indexOf(e.target);
+          if (idx < inputs.length - 1) {
+            inputs[idx + 1].focus();
+          }
+        }
+        // Update hidden field
+        const val = Array.from(inputs).map(inp => inp.value).join('');
+        if (group === 'pin') {
+          document.getElementById('withdrawal-pin').value = val;
+        } else {
+          document.getElementById('confirm-withdrawal-pin').value = val;
+        }
+      }
+      pinInputs.forEach(inp => inp.addEventListener('input', e => handleInput(e, 'pin')));
+      confirmPinInputs.forEach(inp => inp.addEventListener('input', e => handleInput(e, 'confirm')));
+      // Allow backspace to move to previous input
+      function handleKeyDown(e, group) {
+        const inputs = group === 'pin' ? pinInputs : confirmPinInputs;
+        const idx = Array.from(inputs).indexOf(e.target);
+        if (e.key === 'Backspace' && e.target.value === '' && idx > 0) {
+          inputs[idx - 1].focus();
+        }
+      }
+      pinInputs.forEach(inp => inp.addEventListener('keydown', e => handleKeyDown(e, 'pin')));
+      confirmPinInputs.forEach(inp => inp.addEventListener('keydown', e => handleKeyDown(e, 'confirm')));
+    });
+  </script>
+</body>
+</html>

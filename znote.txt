@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Crypto Prices</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1a1a1a; color: #fff; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
+        th { background: #333; }
+        .price { font-weight: bold; }
+        #lastUpdated { font-size: 0.9em; color: #ccc; }
+        a { color: #4CAF50; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Live Crypto Prices</h1>
+    <p>Welcome, {{ name }}! <a href="{{ url_for('home') }}">Back to Home</a></p>
+    <p id="lastUpdated">Last updated: -</p>
+    <table id="priceTable">
+        <thead>
+            <tr><th>Crypto</th><th>Price (USD)</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+   Z
+</body>
+</html>

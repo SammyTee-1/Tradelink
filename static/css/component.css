@@ -1,0 +1,113 @@
+html {
+    scroll-behavior: smooth;
+}
+/* ...existing code... */
+
+body {
+    opacity: 0;
+    transition: opacity 0.7s cubic-bezier(.4,0,.2,1);
+}
+
+body.page-fade-in {
+    opacity: 1;
+}
+
+/* ===== Spinner & Notification (Shared) ===== */
+.toast {
+    position: fixed;
+    top: -100px; /* Start above viewport */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 25px;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: top 0.3s ease-in-out;
+    z-index: 9999;
+    min-width: 220px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.toast.show {
+    top: 30px; /* Slide down to this position */
+}
+
+.toast-success {
+    background-color: green;
+    color: #fff;
+}
+
+.toast-error {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.toast-warning {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.toast-info {
+    background-color: #000;
+    color: #fff;
+}
+
+@media (min-width: 768px) {
+    .toast {
+        width: 260px;
+    }
+}
+
+
+/* ===== Spinner & Notification (Shared) ===== */
+.spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner::after {
+    content: "";
+    width: 48px;
+    height: 48px;
+    border: 6px solid var(--primary);
+    border-top: 6px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.tl-back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--primary);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  transition: color var(--transition);
+  margin-top: -19px;
+  font-weight: 700;
+}
+
+@media (min-width: 900px) {
+  .tl-back-btn {
+    display: none !important;
+  }
+}
+
+.tl-back-btn:hover {
+  color: var(--primary-hover);
+}

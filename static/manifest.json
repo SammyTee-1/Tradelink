@@ -1,0 +1,22 @@
+{
+  "name": "Tradelink",
+  "short_name": "Tradelink",
+  "description": "Login and Signup for Tradelink platform. Secure access to your trading account.",
+  "start_url": "/auth",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1976d2",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/static/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

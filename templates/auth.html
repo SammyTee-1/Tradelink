@@ -1,0 +1,240 @@
+<!doctype html>
+<html>
+  <head>
+    <script>
+      // Set theme as early as possible to prevent white flash
+      (function() {
+        try {
+          var theme = localStorage.getItem('theme') || 'light';
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch(e) {}
+      })();
+    </script>
+    <title>Tradelink - Login & Signup</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Login and Signup for Tradelink platform. Secure access to your trading account.">
+    <meta name="keywords" content="Tradelink, login, signup, trading, account, finance">
+    <meta name="author" content="Tradelink">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Tradelink">
+    <meta name="msapplication-TileColor" content="#025b00">
+    <meta name="msapplication-TileImage" content="{{ url_for('static', filename='icons/icon-192.png') }}">
+    <meta property="og:title" content="Tradelink Login & Signup">
+    <meta property="og:description" content="Login and Signup for Tradelink platform. Secure access to your trading account.">
+    <meta property="og:image" content="{{ url_for('static', filename='icons/icon-512.png') }}">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Tradelink Login & Signup">
+    <meta name="twitter:description" content="Login and Signup for Tradelink platform. Secure access to your trading account.">
+    <meta name="twitter:image" content="{{ url_for('static', filename='icons/icon-512.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/component.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  </head>
+  <body>
+     <style>
+        .form-toggle.hide-toggle { display: none !important; }
+      </style>
+    <div id="spinner" class="spinner hidden"></div>
+    <div id="toast" class="toast"></div>
+    <div class="auth-container">
+      <form id="login-2fa-form" class="auth-form hidden">
+        <h2 style="margin-top: 0.3rem;">2FA Verification</h2>
+        <p style="font-size: 18px;">Enter the 6-digit code from your authenticator app.</p>
+        <div id="login-2fa-code-group" style="display:flex;gap:0.5em;justify-content:center;margin-bottom:1em;">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input login-2fa-code-input" style="width:3.2em;height:3.2em;text-align:center;font-size:2em;border-radius:0.5em;" required autocomplete="one-time-code" placeholder="">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input login-2fa-code-input" style="width:3.2em;height:3.2em;text-align:center;font-size:2em;border-radius:0.5em;" required autocomplete="one-time-code" placeholder="">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input login-2fa-code-input" style="width:3.2em;height:3.2em;text-align:center;font-size:2em;border-radius:0.5em;" required autocomplete="one-time-code" placeholder="">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input login-2fa-code-input" style="width:3.2em;height:3.2em;text-align:center;font-size:2em;border-radius:0.5em;" required autocomplete="one-time-code" placeholder="">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input login-2fa-code-input" style="width:3.2em;height:3.2em;text-align:center;font-size:2em;border-radius:0.5em;" required autocomplete="one-time-code" placeholder="">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input login-2fa-code-input" style="width:3.2em;height:3.2em;text-align:center;font-size:2em;border-radius:0.5em;" required autocomplete="one-time-code" placeholder="">
+        </div>
+        <input type="hidden" id="login-2fa-code" name="login_2fa_code">
+        <button type="submit" id="login-2fa-btn">Verify</button>
+        <button type="button" id="login-2fa-back-btn" class="back-btn">Back</button>
+      </form>
+     
+      
+      <div class="form-toggle">
+        <button id="show-login" class="active">Login</button> 
+        <button id="show-signup">Sign Up</button>
+      </div>
+      <form id="login-form" class="auth-form">
+        <h2>Login</h2>
+        <label for="login-identifier">Email or Phone</label>
+        <input type="text" id="login-identifier" name="identifier" required>
+        <label for="login-password">Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="login-password" name="password" required>
+          <button type="button" class="toggle-password" data-target="login-password" tabindex="-1">Show</button>
+        </div>
+        <a href="#" class="forgot-password-link" id="forgot-password-link">Forgot password?</a>
+        <button type="submit" id="login-btn">Login</button>
+      </form>
+      <form id="signup-form" class="auth-form hidden">
+        <h2>Sign Up</h2>
+        <label for="signup-name">Name</label>
+        <input type="text" id="signup-name" name="name" required>
+        <label for="signup-email">Email</label>
+        <input type="email" id="signup-email" name="email" required>
+        <label for="signup-phone">Phone Number</label>
+        <input type="text" id="signup-phone" name="phone" required>
+        <label for="signup-password">Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="signup-password" name="password" required>
+          <button type="button" class="toggle-password" data-target="signup-password" tabindex="-1">Show</button>
+        </div>
+        <div class="terms-checkbox">
+          <input type="checkbox" id="signup-terms" required>
+          <label for="signup-terms">I accept the <a href="/terms" target="_blank">Terms and Conditions</a></label>
+        </div>
+        <div id="terms-msg" class="auth-msg hidden">You must accept the Terms and Conditions to sign up.</div>
+        <button type="submit" id="signup-btn">Sign Up</button>
+      </form>
+      <form id="verify-form" class="auth-form hidden">
+        <h2>Email Verification</h2>
+        <p>
+          Enter the 6-digit code sent to your email:
+          <span id="verify-email" style="font-weight:bold;"></span>
+          <button type="button" id="edit-email-btn" style="margin-left:1em;font-size:0.95em;">Edit Email</button>
+        </p>
+        <div id="verify-code-group" style="display:flex;gap:0.5em;justify-content:center;margin-bottom:1em;">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input verify-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="one-time-code" placeholder="-">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input verify-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="one-time-code" placeholder="-">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input verify-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="one-time-code" placeholder="-">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input verify-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="one-time-code" placeholder="-">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input verify-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="one-time-code" placeholder="-">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input verify-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="one-time-code" placeholder="-">
+        </div>
+        <input type="hidden" id="verify-code" name="verify_code">
+        <button type="submit" id="verify-btn">Verify</button>
+        <button type="button" id="resend-btn" disabled>Resend Code (<span id="timer">60</span>s)</button>
+      </form>
+      <form id="forgot-form" class="auth-form hidden">
+        <h3>Forgot Password</h3>
+        <label for="forgot-email">Enter your registered email</label>
+        <input type="email" id="forgot-email" required>
+        <button type="submit" id="forgot-send-btn">Send Code</button>
+        <button type="button" id="forgot-back-btn" class="back-btn">Cancel</button>
+      </form>
+      <form id="reset-form" class="auth-form hidden">
+        <h2>Reset Password</h2>
+        <label for="reset-code">Verification Code</label>
+        <div id="reset-code-group" style="display:flex;gap:0.5em;justify-content:center;margin-bottom:1em;">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input reset-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="one-time-code" placeholder="-">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input reset-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="one-time-code" placeholder="-">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input reset-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="one-time-code" placeholder="-">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input reset-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="one-time-code" placeholder="-">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input reset-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="one-time-code" placeholder="-">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="\d" class="auth-input reset-code-input" style="width:2.2em;text-align:center;font-size:1.3em;" required autocomplete="one-time-code" placeholder="-">
+        </div>
+        <input type="hidden" id="reset-code" name="reset_code">
+        <label for="reset-password">New Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="reset-password" required>
+          <button type="button" class="toggle-password" data-target="reset-password" tabindex="-1">Show</button>
+        </div>
+        <label for="reset-password2">Confirm New Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="reset-password2" required>
+          <button type="button" class="toggle-password" data-target="reset-password2" tabindex="-1">Show</button>
+        </div>
+        <button type="submit" id="reset-btn">Reset Password</button>
+        <button type="button" id="reset-back-btn" class="back-btn">Back</button>
+      </form>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+    <script>
+      // 2FA OTP input: allow paste and hide toggle
+      document.addEventListener('DOMContentLoaded', function() {
+        const login2faInputs = document.querySelectorAll('.login-2fa-code-input');
+        const login2faForm = document.getElementById('login-2fa-form');
+        const formToggle = document.querySelector('.form-toggle');
+        if (login2faInputs.length && login2faForm) {
+          // Paste handler for all columns
+          login2faInputs.forEach((inp, idx) => {
+            inp.addEventListener('paste', function(e) {
+              const paste = (e.clipboardData || window.clipboardData).getData('text');
+              if (/^\d{6}$/.test(paste)) {
+                e.preventDefault();
+                for (let i = 0; i < 6; i++) {
+                  login2faInputs[i].value = paste[i];
+                }
+                document.getElementById('login-2fa-code').value = paste;
+                login2faInputs[5].focus();
+              }
+            });
+          });
+          // Hide toggle when 2FA is shown
+          const observer = new MutationObserver(function() {
+            if (!login2faForm.classList.contains('hidden')) {
+              if (formToggle) formToggle.classList.add('hide-toggle');
+            } else {
+              if (formToggle) formToggle.classList.remove('hide-toggle');
+            }
+          });
+          observer.observe(login2faForm, { attributes: true, attributeFilter: ['class'] });
+        }
+      });
+    </script>
+        <script src="{{ url_for('static', filename='js/security.js') }}"></script>
+
+    <script>
+
+
+
+      // Verification code column input logic for Email Verification and Reset Password
+      document.addEventListener('DOMContentLoaded', function() {
+        function digitOnly(e) {
+          if (e.inputType && e.inputType.startsWith('delete')) return;
+          const v = e.target.value;
+          e.target.value = v.replace(/[^0-9]/g, '');
+        }
+        // Email Verification
+        const verifyInputs = document.querySelectorAll('.verify-code-input');
+        function handleVerifyInput(e) {
+          digitOnly(e);
+          if (e.target.value.length === 1) {
+            const idx = Array.from(verifyInputs).indexOf(e.target);
+            if (idx < verifyInputs.length - 1) {
+              verifyInputs[idx + 1].focus();
+            }
+          }
+          document.getElementById('verify-code').value = Array.from(verifyInputs).map(inp => inp.value).join('');
+        }
+        verifyInputs.forEach(inp => inp.addEventListener('input', handleVerifyInput));
+        verifyInputs.forEach(inp => inp.addEventListener('keydown', function(e) {
+          const idx = Array.from(verifyInputs).indexOf(e.target);
+          if (e.key === 'Backspace' && e.target.value === '' && idx > 0) {
+            verifyInputs[idx - 1].focus();
+          }
+        }));
+        // Reset Password Verification
+        const resetInputs = document.querySelectorAll('.reset-code-input');
+        function handleResetInput(e) {
+          digitOnly(e);
+          if (e.target.value.length === 1) {
+            const idx = Array.from(resetInputs).indexOf(e.target);
+            if (idx < resetInputs.length - 1) {
+              resetInputs[idx + 1].focus();
+            }
+          }
+          document.getElementById('reset-code').value = Array.from(resetInputs).map(inp => inp.value).join('');
+        }
+        resetInputs.forEach(inp => inp.addEventListener('input', handleResetInput));
+        resetInputs.forEach(inp => inp.addEventListener('keydown', function(e) {
+          const idx = Array.from(resetInputs).indexOf(e.target);
+          if (e.key === 'Backspace' && e.target.value === '' && idx > 0) {
+            resetInputs[idx - 1].focus();
+          }
+        }));
+      });
+    </script>
+  </body>
+</html>
