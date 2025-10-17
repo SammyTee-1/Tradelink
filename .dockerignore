@@ -1,0 +1,14 @@
+.git
+.gitignore
+.env
+*.pyc
+__pycache__
+.pytest_cache
+venv/
+.venv/
+*.log
+.DS_Store
+.vscode/
+*.pem
+*.key
+node_modules/
