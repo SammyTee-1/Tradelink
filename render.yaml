@@ -4,12 +4,12 @@ services:
     env: python
     buildCommand: |
       python -m pip install --upgrade pip
-      python -m pip install wheel
+      python -m pip install wheel setuptools<81.0.0
       python -m pip install -r requirements.txt
-    startCommand: gunicorn app:app --timeout 120 --workers 4 --worker-class eventlet
+    startCommand: gunicorn app:app --timeout 120 --workers 2 --worker-class eventlet --log-level debug
     envVars:
       - key: PYTHON_VERSION
-        value: 3.9.12
+        value: 3.9.16
       - key: FLASK_ENV
         value: production
       - key: FLASK_APP
