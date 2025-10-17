@@ -3,10 +3,10 @@ services:
     name: tradelink
     env: python
     buildCommand: |
-      pip install --upgrade pip
-      pip install gunicorn
-      pip install -r requirements.txt
-    startCommand: gunicorn --worker-class eventlet -w 1 app:app
+      python -m pip install --upgrade pip
+      python -m pip install wheel
+      python -m pip install -r requirements.txt
+    startCommand: gunicorn app:app --timeout 120 --workers 4 --worker-class eventlet
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.12
@@ -14,5 +14,7 @@ services:
         value: production
       - key: FLASK_APP
         value: app.py
+      - key: PORT
+        value: "8000"
     healthCheckPath: /
     autoDeploy: true
