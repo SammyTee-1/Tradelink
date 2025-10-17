@@ -4,9 +4,10 @@ services:
     env: python
     buildCommand: |
       python -m pip install --upgrade pip
-      python -m pip install wheel setuptools<81.0.0
+      python -m pip install wheel
+      python -m pip install 'setuptools<81.0.0'
       python -m pip install -r requirements.txt
-    startCommand: gunicorn app:app --timeout 120 --workers 2 --worker-class eventlet --log-level debug
+    startCommand: gunicorn app:app --timeout 180 --workers 1 --worker-class eventlet --log-level debug --preload
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.16
@@ -16,5 +17,7 @@ services:
         value: app.py
       - key: PORT
         value: "8000"
+      - key: PYTHONUNBUFFERED
+        value: "true"
     healthCheckPath: /
     autoDeploy: true
